@@ -1,0 +1,26 @@
+if(NOT DEFINED LUNA_PATH_BITS)
+    set(LUNA_PATH_BITS 64)
+endif()
+if(NOT DEFINED LUNA_GUARD)
+    set(LUNA_GUARD 2)
+endif()
+if(NOT DEFINED LUNA_USE_ESP_CRC32)
+    set(LUNA_USE_ESP_CRC32 OFF)
+endif()
+set(LUNA_CORE_SOURCE "${CMAKE_CURRENT_LIST_DIR}/../../../lunu_embedded.c")
+set(LUNA_CORE_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/../../..")
+set(LUNA_V1_SOURCE "${CMAKE_CURRENT_LIST_DIR}/../../../lunu_primitives.c")
+set(LUNA_SOURCES "app_main.c" "${LUNA_CORE_SOURCE}" "${LUNA_V1_SOURCE}")
+if(LUNA_GUARD EQUAL 3 AND LUNA_USE_ESP_CRC32)
+    list(APPEND LUNA_SOURCES "esp_crc_backend.c")
+endif()
+idf_component_register(SRCS ${LUNA_SOURCES}
+                       INCLUDE_DIRS "." "${LUNA_CORE_INCLUDE}"
+                       REQUIRES esp_hw_support)
+target_compile_features(${COMPONENT_LIB} PRIVATE c_std_17)
+target_compile_definitions(${COMPONENT_LIB} PRIVATE
+    LUNU_EMBED_PATH_BITS=${LUNA_PATH_BITS}
+    LUNU_EMBED_GUARD=${LUNA_GUARD})
+if(LUNA_GUARD EQUAL 3 AND LUNA_USE_ESP_CRC32)
+    target_compile_definitions(${COMPONENT_LIB} PRIVATE LUNU_EMBED_USE_ESP_CRC32=1)
+endif()
