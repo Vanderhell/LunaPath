@@ -105,6 +105,7 @@ The firmware workflow example records START → HEADER_OK → ERASE_OK → WRITE
 | 256 | 13,831 | 2,578 |
 
 - The ROM-backed LUNA64/CRC32 step measured 749 cycles at 32 payload bytes and 534 cycles through the pre-tag API in this build, versus 5,421 cycles for V1 rolling at 32 bytes. This build used `-Os`, IDF 5.5.1, and a 160 MHz CPU. The direct ROM backend is materially faster beyond zero-length CRC input; zero-length API overhead remains lower in portable C.
+- The ROM-backed final test firmware image was 195,136 B (complete IDF app and harness). The isolated Xtensa `esp_crc_backend.c` object contributed 27 B of `.text`, 4 B of literal data, and 0 B `.data/.bss`; it calls the ROM routine. This is separate from the portable-core object measurement above.
 - Cycle counter: official IDF `esp_cpu_get_cycle_count()`, configured CPU frequency 160 MHz. Each number is cycles/op; step benchmark includes state initialization and result accumulation.
 
 | `-Os` profile | child | parent | neighbor | step 0 B | 4 B | 16 B | 32 B | pre-tag |
