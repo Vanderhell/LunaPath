@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  profiles:
+    name: ${{ matrix.compiler }} / ${{ matrix.build_type }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+          -DLUNAPATH_BUILD_TESTS=ON
+          -DLUNAPATH_BUILD_EXHAUSTIVE_TESTS=${{ matrix.build_type == 'Release' }}
+          -DLUNAPATH_BUILD_EXAMPLES=ON
+      - name: Build strict profile matrix
+        run: cmake --build build --parallel 2
+      - name: Run profile and wire tests
+        run: ctest --test-dir build --output-on-failure --parallel 2
+
+  independent-validation:
+    name: Independent oracle, vectors, and package consumer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Oracle, C vectors, and fault campaign
+        run: python tools/validate.py
+      - name: Installed-package consumer
+        run: python tools/test_install.py
+      - name: Core allocation audit
+        run: python tools/check_core.py
