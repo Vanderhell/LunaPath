@@ -57,7 +57,7 @@ The complete profile matrix is in [`results.csv`](results.csv).
 | CRC32 | 78.7 ns | 89.3 ns | 247.5 ns | 413.4 ns | 745.5 ns | 2,723 ns | 138.1 ns |
 | ROLL64 | 33.0 ns | 33.1 ns | 50.7 ns | 69.4 ns | 106.1 ns | 345.4 ns | 37.8 ns |
 
-Clang 22 on the Windows host was blocked before project diagnostics because its target could not locate system `string.h`/`assert.h`. ASan/UBSan were unavailable because the installed GCC distribution lacked `-lasan` and `-lubsan`. Neither is counted as PASS.
+Clang on the Windows host was blocked during CMake's compiler link check because the installed toolchain could not locate `oldnames.lib` and `msvcrtd.lib`. This occurs before project diagnostics and is not counted as PASS. Ubuntu GCC and Clang builds are configured in CI but have not run as hosted jobs from this local checkout. ASan/UBSan were unavailable because the installed GCC distribution lacked `-lasan` and `-lubsan`. Neither is counted as PASS.
 
 MinGW GCC `-Os` primitive object sizes, with production functions retained and `.data/.bss=0`: LunaPath64/NONE `.text=1,920 B`; LunaPath64/CRC16 and CRC32 `.text=2,176 B`; LunaPath256/CRC32 `.text=2,240 B`; LunaPath256/ROLL64 `.text=2,272 B`. These are host object figures, not target flash estimates.
 
