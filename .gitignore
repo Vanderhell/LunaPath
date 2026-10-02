@@ -1,0 +1,66 @@
+# CMake and native build output
+/build/
+/build-*/
+/cmake-build-*/
+/out/
+/dist/
+/Testing/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+CMakeUserPresets.json
+CMakeFiles/**
+
+# Compiled programs, objects, libraries, firmware and maps
+*.exe
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.elf
+*.bin
+*.map
+*.pdb
+*.ilk
+*.pch
+*.suo
+*.VC.db
+*.VC.VC.opendb
+*.user
+*.sln.docstates
+
+# ESP-IDF local output/configuration
+.hw-build*/
+.hw-sdkconfig-*
+hardware/**/build/
+hardware/**/sdkconfig
+hardware/**/sdkconfig.old
+hardware/**/managed_components/
+hardware/**/dependencies.lock
+sdkconfig.old
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local IDE state
+.vscode/
+.idea/
+.vs/
+Thumbs.db
+desktop.ini
+
+# Test/benchmark scratch output and coverage
+.*-*.csv
+*.log
+coverage/
+coverage.xml
+lcov.info
+*.profraw
+*.gcda
+*.gcno
+.coverage*
+.ninja_*

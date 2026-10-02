@@ -1,6 +1,7 @@
-"""Fixed-seed deterministic mutation campaign for the V2 event equation."""
+# SPDX-License-Identifier: Apache-2.0
+"""Fixed-seed deterministic mutation campaign for the LunaPath event equation."""
 import random
-from verify_embedded_vectors import advance, event
+from verify_vectors import advance, event
 
 N_PER_CLASS = 12_500
 CLASSES = ("payload_bit", "path_bit", "event_bit", "delete", "duplicate",

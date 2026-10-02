@@ -1,11 +1,9 @@
-"""Reset <PORT>, capture the firmware summary, and compare deterministic replays."""
+# SPDX-License-Identifier: Apache-2.0
+"""Reset the selected ESP32-S3 port and compare deterministic firmware replays."""
 import argparse
-import re
 import time
 
 import serial
-
-MARKER = re.compile(rb"LUNA_EMBEDDED_HW_(?:PASS|FAIL).*")
 
 def one_run(port, timeout):
     lines = []
@@ -20,12 +18,12 @@ def one_run(port, timeout):
             if not raw:
                 continue
             line = raw.strip()
-            if line.startswith((b"HW_CYCLES", b"HW_CRC_BACKEND", b"HW_FINAL_PATH=", b"LUNA_EMBEDDED_HW_")):
+            if line.startswith((b"HW_CYCLES", b"HW_CRC_BACKEND", b"HW_FINAL_PATH=", b"LUNAPATH_HW_")):
                 lines.append(line)
-            if line.startswith(b"LUNA_EMBEDDED_HW_PASS") or line.startswith(b"LUNA_EMBEDDED_HW_FAIL"):
+            if line.startswith(b"LUNAPATH_HW_PASS") or line.startswith(b"LUNAPATH_HW_FAIL"):
                 break
-    if not lines or not lines[-1].startswith(b"LUNA_EMBEDDED_HW_PASS"):
-        raise RuntimeError("firmware did not report LUNA_EMBEDDED_HW_PASS; captured: " + repr(lines))
+    if not lines or not lines[-1].startswith(b"LUNAPATH_HW_PASS"):
+        raise RuntimeError("firmware did not report LUNAPATH_HW_PASS; captured: " + repr(lines))
     final_path = next((line for line in lines if line.startswith(b"HW_FINAL_PATH=")), None)
     if final_path is None:
         raise RuntimeError("firmware did not report final path")
@@ -33,7 +31,7 @@ def one_run(port, timeout):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", default="<PORT>")
+    parser.add_argument("--port", required=True, help="serial port for the identified ESP32-S3")
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--timeout", type=float, default=45.0)
     args = parser.parse_args()

@@ -1,4 +1,5 @@
-"""Independent byte-oriented oracle for LUNA Embedded events and profiles."""
+# SPDX-License-Identifier: Apache-2.0
+"""Independent byte-oriented oracle for LunaPath events and profiles."""
 import random
 import sys
 
