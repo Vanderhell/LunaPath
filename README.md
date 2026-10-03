@@ -1,8 +1,10 @@
 # LunaPath
 
+[![CI](https://github.com/Vanderhell/LunaPath/actions/workflows/ci.yml/badge.svg)](https://github.com/Vanderhell/LunaPath/actions/workflows/ci.yml)
+
 > Bounded path and ordered-event integrity primitives for embedded systems.
 
-LunaPath is a bounded, allocation-free C library for representing hierarchical binary paths and validating ordered event progression with optional lightweight integrity guards. It targets microcontrollers, deterministic firmware, and embedded state machines.
+LunaPath is a bounded, allocation-free C library for representing hierarchical binary paths and validating ordered event progression with optional lightweight integrity guards. It targets microcontrollers, deterministic firmware, and embedded state machines. CRC and rolling guards detect accidental corruption; they are not cryptographic authentication.
 
 ## What it provides
 
@@ -32,7 +34,7 @@ int save_path(const lunapath_state *state, uint8_t *wire, size_t capacity,
 }
 ```
 
-Initialize state with `lunapath_state_zero()` before recording events. Configure a build with `LUNAPATH_PATH_BITS` and `LUNAPATH_GUARD`; their defaults are 64 and CRC16. `lunapath_step()` appends one path decision and folds the event's payload into the configured guard. `NULL` is valid when `payload_bits` is zero.
+Initialize state with `lunapath_state_zero()` before recording events. Configure a build with `LUNAPATH_PATH_BITS` and `LUNAPATH_GUARD`; the portable default is LunaPath64/CRC16. `lunapath_step()` appends one path decision and folds the event's payload into the configured guard. `NULL` is valid when `payload_bits` is zero.
 
 ## Footprint and measured result
 
@@ -50,13 +52,23 @@ On the tested ESP32-S3 at 160 MHz with `-Os`, a 32-byte LunaPath64/CRC32 event s
 
 CRC and rolling guards detect accidental corruption. **LunaPath is not a cryptographic authentication mechanism** and does not authenticate events against a malicious attacker.
 
-## Build and test
+## Build, install, and test
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
+cmake --install build --prefix /path/to/prefix
 ```
+
+A CMake consumer can find and link the installed library:
+
+```cmake
+find_package(LunaPath CONFIG REQUIRED)
+target_link_libraries(app PRIVATE LunaPath::lunapath)
+```
+
+Set `CMAKE_PREFIX_PATH` to the installation prefix when it is not in a standard package location.
 
 Select a profile when configuring, for example:
 
@@ -64,9 +76,13 @@ Select a profile when configuring, for example:
 cmake -S . -B build-64-crc32 -DLUNAPATH_PATH_BITS=64 -DLUNAPATH_GUARD=3
 ```
 
-The full Python oracle, vector, and fault campaigns are available with `python tools/validate.py`. Python is not needed to consume or build the library. ESP32-S3 application sources and generic port instructions are in [`hardware/esp32s3/README.md`](hardware/esp32s3/README.md).
+The full Python oracle, vector, and fault campaigns are available with `python tools/validate.py`. Python is not needed to consume or build the library.
 
-Detailed host and hardware evidence is in [`validation/RESULTS.md`](validation/RESULTS.md), with the memory matrix in [`validation/results.csv`](validation/results.csv). The V1 implementation remains in [`legacy/v1/`](legacy/v1/) as a historical differential oracle; new projects should use the `lunapath_*` API.
+## Tested compatibility
+
+Hosted CI builds and tests with GCC on Ubuntu, Clang on Ubuntu, and MSVC on Windows. Hardware validation covers the ESP32-S3 with ESP-IDF 5.5.1. The measured ESP32-S3 CRC32 result used LunaPath64/CRC32 with the optional ESP-IDF ROM CRC32 backend; this target-specific optimization does not change the portable LunaPath64/CRC16 default.
+
+ESP32-S3 application sources and generic port instructions are in [`hardware/esp32s3/README.md`](hardware/esp32s3/README.md). Detailed host and hardware evidence is in [`validation/RESULTS.md`](validation/RESULTS.md), with the memory matrix in [`validation/results.csv`](validation/results.csv). The V1 implementation remains in [`legacy/v1/`](legacy/v1/) as a historical differential oracle; new projects should use the `lunapath_*` API.
 
 ## License
 

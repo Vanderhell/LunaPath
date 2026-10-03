@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a reproducible LunaPath problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report a minimal reproducible issue. Do not include secrets, private firmware, or unredacted private logs.
+  - type: input
+    id: version
+    attributes:
+      label: LunaPath version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: path_bits
+    attributes:
+      label: LUNAPATH_PATH_BITS
+      placeholder: "64"
+    validations:
+      required: true
+  - type: input
+    id: guard
+    attributes:
+      label: LUNAPATH_GUARD
+      description: "0=NONE, 1=PARITY, 2=CRC16, 3=CRC32, 4=ROLL64"
+      placeholder: "2"
+    validations:
+      required: true
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler and version
+      placeholder: "GCC 14"
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Target OS / MCU
+      placeholder: "ESP32-S3 / ESP-IDF 5.5.1"
+    validations:
+      required: true
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Minimal reproducer
+      description: Include the smallest source/configuration needed to reproduce the behavior.
+      render: c
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
